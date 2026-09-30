@@ -1,0 +1,1542 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>knygogo — книжкова барахолка</title>
+    <meta name="description" content="knygogo — книжкова барахолка. Купуй та продавай книги швидко та зручно.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600&display=swap" rel="stylesheet">
+    <style>
+        /* ============================================================
+           RESET & BASE
+           ============================================================ */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            background-color: #FDFBF7;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            color: #1a1a1a;
+            background: #FDFBF7;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            line-height: 1.6;
+        }
+
+        ::selection {
+            background: rgba(91, 138, 114, 0.2);
+            color: #1a1a1a;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        img {
+            display: block;
+            max-width: 100%;
+        }
+
+        button {
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        input {
+            font-family: inherit;
+        }
+
+        .font-heading {
+            font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+        }
+
+        /* ============================================================
+           LAYOUT UTILITIES
+           ============================================================ */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+
+        @media (min-width: 640px) { .container { padding: 0 24px; } }
+        @media (min-width: 1024px) { .container { padding: 0 32px; } }
+
+        /* ============================================================
+           ANIMATIONS
+           ============================================================ */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(32px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50%      { transform: translateY(-12px); }
+        }
+
+        @keyframes pulseSoft {
+            0%, 100% { opacity: 0.4; }
+            50%      { opacity: 0.7; }
+        }
+
+        @keyframes shimmer {
+            0%   { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .animate-pulse-soft {
+            animation: pulseSoft 4s ease-in-out infinite;
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(32px);
+        }
+
+        .reveal.visible {
+            animation: fadeInUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        /* ============================================================
+           HEADER
+           ============================================================ */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(253, 251, 247, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid #e8e3dc;
+        }
+
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+
+        @media (min-width: 1024px) {
+            .header-inner { height: 80px; }
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            background: #5B8A72;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s;
+        }
+
+        .logo:hover .logo-icon {
+            transform: scale(1.1) rotate(-4deg);
+        }
+
+        .logo-icon svg {
+            width: 20px;
+            height: 20px;
+            color: white;
+        }
+
+        .logo-text {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #1a1a1a;
+        }
+
+        .logo-text .dot { color: #5B8A72; }
+
+        .nav-links {
+            display: none;
+            align-items: center;
+            gap: 32px;
+            font-size: 15px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        @media (min-width: 768px) {
+            .nav-links { display: flex; }
+        }
+
+        .nav-link {
+            position: relative;
+            padding: 4px 0;
+            transition: color 0.3s;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #5B8A72;
+            transform: scaleX(0);
+            transition: transform 0.3s;
+            transform-origin: center;
+        }
+
+        .nav-link:hover { color: #1a1a1a; }
+        .nav-link:hover::after { transform: scaleX(1); }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-nav {
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+            background: transparent;
+            color: #555;
+        }
+
+        .btn-nav:hover {
+            color: #1a1a1a;
+            background: #f0ebe4;
+        }
+
+        .btn-nav-primary {
+            background: #5B8A72;
+            color: white;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 6px rgba(91, 138, 114, 0.15);
+        }
+
+        .btn-nav-primary:hover {
+            background: #4a7660;
+            color: white;
+            box-shadow: 0 6px 12px rgba(91, 138, 114, 0.25);
+            transform: translateY(-1px);
+        }
+
+        .btn-nav-primary svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Mobile menu toggle */
+        .mobile-toggle {
+            display: block;
+            padding: 8px;
+            border-radius: 12px;
+            background: transparent;
+            transition: background 0.3s;
+        }
+
+        .mobile-toggle:hover { background: #f0ebe4; }
+        .mobile-toggle svg { width: 20px; height: 20px; }
+
+        @media (min-width: 768px) {
+            .mobile-toggle { display: none; }
+        }
+
+        .mobile-menu {
+            display: none;
+            padding: 16px 0;
+            border-top: 1px solid #e8e3dc;
+        }
+
+        .mobile-menu.active { display: block; }
+
+        @media (min-width: 768px) {
+            .mobile-menu { display: none !important; }
+        }
+
+        .mobile-menu a {
+            display: block;
+            padding: 10px 16px;
+            border-radius: 12px;
+            color: #555;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .mobile-menu a:hover {
+            color: #1a1a1a;
+            background: #f0ebe4;
+        }
+
+        .mobile-menu .btn-mobile-primary {
+            background: #5B8A72;
+            color: white;
+            font-weight: 600;
+            text-align: center;
+            margin-top: 8px;
+        }
+
+        .mobile-menu .btn-mobile-primary:hover {
+            background: #4a7660;
+            color: white;
+        }
+
+        /* ============================================================
+           HERO
+           ============================================================ */
+        .hero {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-blob-1 {
+            position: absolute;
+            top: 80px;
+            right: 0;
+            width: 384px;
+            height: 384px;
+            background: rgba(91, 138, 114, 0.05);
+            border-radius: 50%;
+            filter: blur(48px);
+            animation: pulseSoft 4s ease-in-out infinite;
+        }
+
+        .hero-blob-2 {
+            position: absolute;
+            bottom: 0;
+            left: 40px;
+            width: 288px;
+            height: 288px;
+            background: rgba(226, 114, 91, 0.05);
+            border-radius: 50%;
+            filter: blur(48px);
+            animation: pulseSoft 4s ease-in-out infinite;
+            animation-delay: 2s;
+        }
+
+        .hero-inner {
+            padding: 64px 0;
+        }
+
+        @media (min-width: 1024px) {
+            .hero-inner { padding: 112px 0; }
+        }
+
+        .hero-grid {
+            display: grid;
+            gap: 48px;
+            align-items: center;
+        }
+
+        @media (min-width: 1024px) {
+            .hero-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 64px;
+            }
+        }
+
+        .hero-content {
+            max-width: 560px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 9999px;
+            background: rgba(91, 138, 114, 0.1);
+            color: #5B8A72;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 32px;
+        }
+
+        .hero-badge svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            color: #1a1a1a;
+        }
+
+        @media (min-width: 640px) { .hero h1 { font-size: 3rem; } }
+        @media (min-width: 1024px) { .hero h1 { font-size: 3.5rem; } }
+        @media (min-width: 1280px) { .hero h1 { font-size: 3.75rem; } }
+
+        .hero-highlight {
+            position: relative;
+            display: inline-block;
+        }
+
+        .hero-highlight-text {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-highlight-bg {
+            position: absolute;
+            bottom: 4px;
+            left: 0;
+            right: 0;
+            height: 12px;
+            background: rgba(91, 138, 114, 0.15);
+            border-radius: 2px;
+            transform: rotate(-1deg);
+        }
+
+        .hero-desc {
+            font-size: 18px;
+            color: #666;
+            line-height: 1.7;
+            margin-bottom: 40px;
+            max-width: 440px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 28px;
+            background: #5B8A72;
+            color: white;
+            font-weight: 600;
+            border-radius: 16px;
+            transition: all 0.3s;
+            box-shadow: 0 8px 16px rgba(91, 138, 114, 0.2);
+            font-size: 15px;
+        }
+
+        .btn-primary:hover {
+            background: #4a7660;
+            box-shadow: 0 12px 24px rgba(91, 138, 114, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary svg {
+            width: 16px;
+            height: 16px;
+            transition: transform 0.3s;
+        }
+
+        .btn-primary:hover svg {
+            transform: translateX(4px);
+        }
+
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 28px;
+            background: white;
+            color: #1a1a1a;
+            font-weight: 600;
+            border-radius: 16px;
+            border: 1px solid #e8e3dc;
+            transition: all 0.3s;
+            font-size: 15px;
+        }
+
+        .btn-secondary:hover {
+            border-color: #ccc;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 40px;
+            margin-top: 56px;
+        }
+
+        .hero-stat-number {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .hero-stat-label {
+            font-size: 14px;
+            color: #999;
+            margin-top: 4px;
+        }
+
+        .hero-stat-divider {
+            width: 1px;
+            background: #e8e3dc;
+        }
+
+        /* Hero Image */
+        .hero-image {
+            position: relative;
+            display: none;
+        }
+
+        @media (min-width: 1024px) {
+            .hero-image { display: block; }
+        }
+
+        .hero-image-glow {
+            position: absolute;
+            inset: -16px;
+            background: linear-gradient(135deg, rgba(91, 138, 114, 0.1), rgba(226, 114, 91, 0.1));
+            border-radius: 2.5rem;
+            filter: blur(16px);
+        }
+
+        .hero-image-wrapper {
+            position: relative;
+        }
+
+        .hero-image img {
+            border-radius: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            height: 560px;
+            object-fit: cover;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .hero-float-card {
+            position: absolute;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 1px solid #f0ebe4;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .hero-float-card-bottom {
+            bottom: -24px;
+            left: -24px;
+            padding: 20px;
+        }
+
+        .hero-float-card-top {
+            top: -16px;
+            right: -16px;
+            padding: 14px 20px;
+            animation-delay: 3s;
+        }
+
+        .float-card-inner {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .float-card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: rgba(226, 114, 91, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .float-card-icon svg {
+            width: 20px;
+            height: 20px;
+            color: #E2725B;
+        }
+
+        .float-card-title {
+            font-weight: 700;
+            font-size: 14px;
+            color: #1a1a1a;
+        }
+
+        .float-card-sub {
+            font-size: 12px;
+            color: #999;
+        }
+
+        /* ============================================================
+           BENEFITS
+           ============================================================ */
+        .benefits {
+            background: #1A2F25;
+            color: white;
+            padding: 80px 0;
+        }
+
+        @media (min-width: 1024px) {
+            .benefits { padding: 96px 0; }
+        }
+
+        .benefits-header {
+            text-align: center;
+            margin-bottom: 64px;
+        }
+
+        .benefits-header h2 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        @media (min-width: 1024px) {
+            .benefits-header h2 { font-size: 2.25rem; }
+        }
+
+        .benefits-header p {
+            color: rgba(255, 255, 255, 0.6);
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .benefits-grid {
+            display: grid;
+            gap: 24px;
+        }
+
+        @media (min-width: 640px) { .benefits-grid { grid-template-columns: 1fr 1fr; } }
+        @media (min-width: 1024px) {
+            .benefits-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 32px;
+            }
+        }
+
+        .benefit-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(8px);
+            border-radius: 16px;
+            padding: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+        }
+
+        .benefit-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .benefit-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 16px;
+            background: rgba(91, 138, 114, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            transition: transform 0.3s;
+        }
+
+        .benefit-card:hover .benefit-icon {
+            transform: scale(1.1);
+        }
+
+        .benefit-icon svg {
+            width: 24px;
+            height: 24px;
+            color: #7DC4A5;
+        }
+
+        .benefit-card h3 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .benefit-card p {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* ============================================================
+           CATALOG
+           ============================================================ */
+        .catalog {
+            padding: 80px 0;
+        }
+
+        @media (min-width: 1024px) {
+            .catalog { padding: 112px 0; }
+        }
+
+        .catalog-header {
+            margin-bottom: 48px;
+        }
+
+        .catalog-header h2 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        @media (min-width: 1024px) {
+            .catalog-header h2 { font-size: 2.25rem; }
+        }
+
+        .catalog-header p {
+            color: #999;
+            margin-top: 8px;
+        }
+
+        .catalog-grid {
+            display: grid;
+            gap: 24px;
+        }
+
+        @media (min-width: 640px) { .catalog-grid { grid-template-columns: 1fr 1fr; } }
+        @media (min-width: 1024px) { .catalog-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (min-width: 1280px) { .catalog-grid { grid-template-columns: repeat(4, 1fr); } }
+
+        .book-card {
+            display: flex;
+            flex-direction: column;
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #e8e3dc;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .book-card:hover {
+            box-shadow: 0 20px 40px rgba(91, 138, 114, 0.08);
+            transform: translateY(-4px);
+        }
+
+        .book-image {
+            position: relative;
+            overflow: hidden;
+            background: #f5f0eb;
+            aspect-ratio: 3/4;
+        }
+
+        .book-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .book-card:hover .book-image img {
+            transform: scale(1.05);
+        }
+
+        .book-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            padding: 4px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 8px;
+            z-index: 1;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .badge-new { background: #e0f2fe; color: #0369a1; }
+        .badge-ideal { background: #d1fae5; color: #047857; }
+        .badge-good { background: #fef3c7; color: #b45309; }
+        .badge-like-new { background: #ede9fe; color: #6d28d9; }
+
+        .book-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            opacity: 0.3;
+        }
+
+        .book-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .book-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-weight: 700;
+            font-size: 17px;
+            line-height: 1.3;
+            margin-bottom: 4px;
+            color: #1a1a1a;
+            transition: color 0.3s;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .book-card:hover .book-title {
+            color: #5B8A72;
+        }
+
+        .book-author {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 4px;
+        }
+
+        .book-seller {
+            font-size: 12px;
+            color: #bbb;
+            margin-bottom: 16px;
+        }
+
+        .book-footer {
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .book-price {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .book-view-btn {
+            font-size: 12px;
+            font-weight: 500;
+            color: #5B8A72;
+            background: rgba(91, 138, 114, 0.1);
+            padding: 4px 12px;
+            border-radius: 8px;
+        }
+
+        /* ============================================================
+           TESTIMONIALS
+           ============================================================ */
+        .testimonials {
+            background: #f5f0eb;
+            padding: 80px 0;
+        }
+
+        @media (min-width: 1024px) {
+            .testimonials { padding: 96px 0; }
+        }
+
+        .testimonials-header {
+            text-align: center;
+            margin-bottom: 56px;
+        }
+
+        .testimonials-header h2 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        @media (min-width: 1024px) {
+            .testimonials-header h2 { font-size: 2.25rem; }
+        }
+
+        .testimonials-header p {
+            color: #999;
+            margin-top: 8px;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            gap: 24px;
+        }
+
+        @media (min-width: 768px) {
+            .testimonials-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 32px;
+            }
+        }
+
+        .testimonial-card {
+            background: white;
+            border-radius: 16px;
+            padding: 28px;
+            border: 1px solid #e8e3dc;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            transition: all 0.3s;
+        }
+
+        .testimonial-card:hover {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+        }
+
+        .testimonial-stars {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 16px;
+        }
+
+        .testimonial-stars svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .star-filled { color: #f59e0b; }
+        .star-empty { color: #e8e3dc; }
+
+        .testimonial-text {
+            color: #555;
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .testimonial-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(91, 138, 114, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: #5B8A72;
+        }
+
+        .testimonial-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: #1a1a1a;
+        }
+
+        /* ============================================================
+           CTA / NEWSLETTER
+           ============================================================ */
+        .cta {
+            position: relative;
+            overflow: hidden;
+            background: #5B8A72;
+            padding: 80px 0;
+        }
+
+        @media (min-width: 1024px) {
+            .cta { padding: 96px 0; }
+        }
+
+        .cta-pattern {
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='1' cy='1' r='1' fill='rgba(255,255,255,0.05)'/%3E%3C/svg%3E");
+            opacity: 0.5;
+        }
+
+        .cta-inner {
+            max-width: 640px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta h2 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 16px;
+        }
+
+        @media (min-width: 1024px) {
+            .cta h2 { font-size: 2.25rem; }
+        }
+
+        .cta-desc {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 18px;
+            margin-bottom: 40px;
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 420px;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 640px) {
+            .cta-form { flex-direction: row; }
+        }
+
+        .cta-input {
+            flex: 1;
+            padding: 16px 20px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .cta-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .cta-input:focus {
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.15);
+        }
+
+        .cta-btn {
+            padding: 16px 32px;
+            background: white;
+            color: #5B8A72;
+            font-weight: 700;
+            border-radius: 16px;
+            transition: all 0.3s;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            white-space: nowrap;
+            font-size: 15px;
+        }
+
+        .cta-btn:hover {
+            background: #f5f0eb;
+            box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+
+        .cta-note {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 12px;
+            margin-top: 16px;
+        }
+
+        /* ============================================================
+           FOOTER
+           ============================================================ */
+        .footer {
+            background: #FDFBF7;
+            border-top: 1px solid #e8e3dc;
+            padding: 48px 0 32px;
+        }
+
+        .footer-content {
+            text-align: center;
+            font-size: 14px;
+            color: #999;
+        }
+
+        /* ============================================================
+           HELPER: HIDE ON SM / LG
+           ============================================================ */
+        .hidden-sm {
+            display: none;
+        }
+
+        @media (min-width: 640px) {
+            .hidden-sm { display: flex; }
+        }
+    </style>
+</head>
+<body>
+    <!-- ===== HEADER ===== -->
+    <header class="header">
+        <nav class="container">
+            <div class="header-inner">
+                <a href="#" class="logo">
+                    <div class="logo-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                    </div>
+                    <span class="logo-text">knygogo<span class="dot">.</span></span>
+                </a>
+
+                <div class="nav-links">
+                    <a href="#catalog" class="nav-link">Каталог</a>
+                    <a href="#delivery" class="nav-link">Переваги</a>
+                    <a href="#about" class="nav-link">Про нас</a>
+                </div>
+
+                <div class="nav-actions hidden-sm">
+                    <a href="#" class="btn-nav">Увійти</a>
+                    <a href="#" class="btn-nav btn-nav-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Продати книгу
+                    </a>
+                </div>
+
+                <button class="mobile-toggle" onclick="document.getElementById('mobileMenu').classList.toggle('active')" aria-label="Меню">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+
+            <div id="mobileMenu" class="mobile-menu">
+                <a href="#catalog">Каталог</a>
+                <a href="#delivery">Переваги</a>
+                <a href="#about">Про нас</a>
+                <a href="#">Увійти</a>
+                <a href="#" class="btn-mobile-primary">Продати книгу</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- ===== HERO ===== -->
+    <section class="hero">
+        <div class="hero-blob-1"></div>
+        <div class="hero-blob-2"></div>
+
+        <div class="container">
+            <div class="hero-inner">
+                <div class="hero-grid">
+                    <div class="hero-content animate-fade-in-up">
+                        <div class="hero-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                            Продавай та купуй книги легко
+                        </div>
+
+                        <h1>
+                            Купуй та продавай книги на
+                            <span class="hero-highlight">
+                                <span class="hero-highlight-text">справжній барахолці</span>
+                                <span class="hero-highlight-bg"></span>
+                            </span>
+                        </h1>
+
+                        <p class="hero-desc">
+                            knygogo — це місце, де кожен може знайти рідкісні видання та продати власні прочитані книги іншим книголюбам.
+                        </p>
+
+                        <div class="hero-buttons">
+                            <a href="#catalog" class="btn-primary">
+                                Перейти до каталогу
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                </svg>
+                            </a>
+                            <a href="#" class="btn-secondary">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                                </svg>
+                                Продати книгу
+                            </a>
+                        </div>
+
+                        <div class="hero-stats">
+                            <div>
+                                <div class="hero-stat-number">128</div>
+                                <div class="hero-stat-label">книг у каталозі</div>
+                            </div>
+                            <div class="hero-stat-divider"></div>
+                            <div>
+                                <div class="hero-stat-number">4.9 ★</div>
+                                <div class="hero-stat-label">рейтинг покупців</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hero-image animate-fade-in-up" style="animation-delay: 0.2s;">
+                        <div class="hero-image-glow"></div>
+                        <div class="hero-image-wrapper">
+                            <img
+                                src="https://images.unsplash.com/photo-1495446815901-a7297e633e8d?q=80&w=1200&auto=format&fit=crop"
+                                alt="Затишний куточок для читання"
+                            >
+                            <div class="hero-float-card hero-float-card-bottom">
+                                <div class="float-card-inner">
+                                    <div class="float-card-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div class="float-card-title">Купуй напряму</div>
+                                        <div class="float-card-sub">від продавця</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="hero-float-card hero-float-card-top" style="animation-delay: 3s;">
+                                <div class="float-card-inner">
+                                    <span style="font-size: 20px;">📚</span>
+                                    <span class="float-card-title">Нові оголошення щодня</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== BENEFITS ===== -->
+    <section id="delivery" class="benefits">
+        <div class="container">
+            <div class="benefits-header reveal">
+                <h2>Чому обирають knygogo?</h2>
+                <p>Найзручніша книжкова барахолка для справжніх книголюбів</p>
+            </div>
+
+            <div class="benefits-grid">
+                <div class="benefit-card reveal" style="animation-delay: 0.1s;">
+                    <div class="benefit-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                        </svg>
+                    </div>
+                    <h3>Продавай легко</h3>
+                    <p>Додай фото, вкажи ціну — і покупці знайдуть твою книгу самі.</p>
+                </div>
+
+                <div class="benefit-card reveal" style="animation-delay: 0.2s;">
+                    <div class="benefit-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                        </svg>
+                    </div>
+                    <h3>Чат з продавцем</h3>
+                    <p>Домовляйся про ціну та доставку напряму з продавцем.</p>
+                </div>
+
+                <div class="benefit-card reveal" style="animation-delay: 0.3s;">
+                    <div class="benefit-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                    </div>
+                    <h3>Безпечні угоди</h3>
+                    <p>Перевіряй стан книги перед покупкою. Прозорий досвід для всіх.</p>
+                </div>
+
+                <div class="benefit-card reveal" style="animation-delay: 0.4s;">
+                    <div class="benefit-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                    </div>
+                    <h3>Еко-підхід</h3>
+                    <p>Даємо книгам друге життя. Зберігаємо природу разом із кожною прочитаною сторінкою.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== CATALOG ===== -->
+    <section id="catalog" class="catalog">
+        <div class="container">
+            <div class="catalog-header reveal">
+                <h2>Каталог книг</h2>
+                <p>Знайди свою наступну улюблену книгу</p>
+            </div>
+
+            <div class="catalog-grid">
+                <!-- Book 1 -->
+                <a href="#" class="book-card reveal" style="animation-delay: 0.05s;">
+                    <div class="book-image">
+                        <span class="book-badge badge-new">Нова</span>
+                        <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=600&auto=format&fit=crop" alt="Кобзар">
+                    </div>
+                    <div class="book-info">
+                        <div class="book-title">Кобзар</div>
+                        <div class="book-author">Тарас Шевченко</div>
+                        <div class="book-seller">від Олена К.</div>
+                        <div class="book-footer">
+                            <span class="book-price">250 ₴</span>
+                            <span class="book-view-btn">Переглянути</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Book 2 -->
+                <a href="#" class="book-card reveal" style="animation-delay: 0.1s;">
+                    <div class="book-image">
+                        <span class="book-badge badge-ideal">Ідеальний стан</span>
+                        <img src="https://images.unsplash.com/photo-1543002588-bfa74002ed7e?q=80&w=600&auto=format&fit=crop" alt="Тіні забутих предків">
+                    </div>
+                    <div class="book-info">
+                        <div class="book-title">Тіні забутих предків</div>
+                        <div class="book-author">Михайло Коцюбинський</div>
+                        <div class="book-seller">від Максим Д.</div>
+                        <div class="book-footer">
+                            <span class="book-price">180 ₴</span>
+                            <span class="book-view-btn">Переглянути</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Book 3 -->
+                <a href="#" class="book-card reveal" style="animation-delay: 0.15s;">
+                    <div class="book-image">
+                        <span class="book-badge badge-good">Гарний стан</span>
+                        <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?q=80&w=600&auto=format&fit=crop" alt="Місто">
+                    </div>
+                    <div class="book-info">
+                        <div class="book-title">Місто</div>
+                        <div class="book-author">Валер'ян Підмогильний</div>
+                        <div class="book-seller">від Анна П.</div>
+                        <div class="book-footer">
+                            <span class="book-price">320 ₴</span>
+                            <span class="book-view-btn">Переглянути</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Book 4 -->
+                <a href="#" class="book-card reveal" style="animation-delay: 0.2s;">
+                    <div class="book-image">
+                        <span class="book-badge badge-like-new">Як нова</span>
+                        <img src="https://images.unsplash.com/photo-1532012197267-da84d127e765?q=80&w=600&auto=format&fit=crop" alt="Лісова пісня">
+                    </div>
+                    <div class="book-info">
+                        <div class="book-title">Лісова пісня</div>
+                        <div class="book-author">Леся Українка</div>
+                        <div class="book-seller">від Ігор С.</div>
+                        <div class="book-footer">
+                            <span class="book-price">210 ₴</span>
+                            <span class="book-view-btn">Переглянути</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Book 5 -->
+                <a href="#" class="book-card reveal" style="animation-delay: 0.25s;">
+                    <div class="book-image">
+                        <span class="book-badge badge-new">Нова</span>
+                        <img src="https://images.unsplash.com/photo-1524578271613-d550eacf6090?q=80&w=600&auto=format&fit=crop" alt="Intermezzo">
+                    </div>
+                    <div class="book-info">
+                        <div class="book-title">Intermezzo</div>
+                        <div class="book-author">Михайло Коцюбинський</div>
+                        <div class="book-seller">від Дарія В.</div>
+                        <div class="book-footer">
+                            <span class="book-price">150 ₴</span>
+                            <span class="book-view-btn">Переглянути</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Book 6 -->
+                <a href="#" class="book-card reveal" style="animation-delay: 0.3s;">
+                    <div class="book-image">
+                        <span class="book-badge badge-ideal">Ідеальний стан</span>
+                        <img src="https://images.unsplash.com/photo-1497633762265-9d179a990aa6?q=80&w=600&auto=format&fit=crop" alt="Захар Беркут">
+                    </div>
+                    <div class="book-info">
+                        <div class="book-title">Захар Беркут</div>
+                        <div class="book-author">Іван Франко</div>
+                        <div class="book-seller">від Наталія Р.</div>
+                        <div class="book-footer">
+                            <span class="book-price">280 ₴</span>
+                            <span class="book-view-btn">Переглянути</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Book 7 -->
+                <a href="#" class="book-card reveal" style="animation-delay: 0.35s;">
+                    <div class="book-image">
+                        <span class="book-badge badge-good">Гарний стан</span>
+                        <img src="https://images.unsplash.com/photo-1476275466078-4007374efbbe?q=80&w=600&auto=format&fit=crop" alt="Маруся Чурай">
+                    </div>
+                    <div class="book-info">
+                        <div class="book-title">Маруся Чурай</div>
+                        <div class="book-author">Ліна Костенко</div>
+                        <div class="book-seller">від Олексій М.</div>
+                        <div class="book-footer">
+                            <span class="book-price">350 ₴</span>
+                            <span class="book-view-btn">Переглянути</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Book 8 -->
+                <a href="#" class="book-card reveal" style="animation-delay: 0.4s;">
+                    <div class="book-image">
+                        <span class="book-badge badge-like-new">Як нова</span>
+                        <img src="https://images.unsplash.com/photo-1589998059171-988d887df646?q=80&w=600&auto=format&fit=crop" alt="Тигролови">
+                    </div>
+                    <div class="book-info">
+                        <div class="book-title">Тигролови</div>
+                        <div class="book-author">Іван Багряний</div>
+                        <div class="book-seller">від Марія Т.</div>
+                        <div class="book-footer">
+                            <span class="book-price">195 ₴</span>
+                            <span class="book-view-btn">Переглянути</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== TESTIMONIALS ===== -->
+    <section class="testimonials">
+        <div class="container">
+            <div class="testimonials-header reveal">
+                <h2>Що кажуть наші користувачі</h2>
+                <p>Тисячі задоволених книголюбів</p>
+            </div>
+
+            <div class="testimonials-grid">
+                <div class="testimonial-card reveal" style="animation-delay: 0s;">
+                    <div class="testimonial-stars">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="star-filled" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="star-filled" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="star-filled" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="star-filled" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="star-filled" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    </div>
+                    <p class="testimonial-text">"Знайшла рідкісну книгу за чудовою ціною. Продавець відповів одразу. Дуже зручна барахолка!"</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">О</div>
+                        <span class="testimonial-name">Олена К.</span>
+                    </div>
+                </div>
+
+                <div class="testimonial-card reveal" style="animation-delay: 0.15s;">
+                    <div class="testimonial-stars">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="star-filled" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="star-filled" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="star-filled" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="star-filled" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="star-filled" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    </div>
+                    <p class="testimonial-text">"Продав 15 книг за тиждень. Все просто: додав фото, вказав ціну — і покупці знаходяться самі."</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">М</div>
+                        <span class="testimonial-name">Максим Д.</span>
+                    </div>
+                </div>
+
+                <div class="testimonial-card reveal" style="animation-delay: 0.3s;">
+                    <div class="testimonial-stars">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="star-filled" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="star-filled" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="star-filled" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="star-filled" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="star-empty" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    </div>
+                    <p class="testimonial-text">"Подобається еко-підхід. Купую б/в книги тут і даю їм друге життя. Ціни дуже приємні!"</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">А</div>
+                        <span class="testimonial-name">Анна П.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== CTA / NEWSLETTER ===== -->
+    <section id="about" class="cta">
+        <div class="cta-pattern"></div>
+        <div class="container">
+            <div class="cta-inner reveal">
+                <h2>Не пропускай нові надходження</h2>
+                <p class="cta-desc">Підпишись на розсилку та отримуй анонси рідкісних видань і персональні рекомендації.</p>
+
+                <div class="cta-form">
+                    <input type="email" placeholder="Твій email" class="cta-input">
+                    <button class="cta-btn">Підписатися</button>
+                </div>
+
+                <p class="cta-note">Жодного спаму. Тільки книги 📚</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>© 2026 knygogo. Твоя книжкова барахолка.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ===== SCROLL REVEAL SCRIPT ===== -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const observer = new IntersectionObserver(
+                function(entries) {
+                    entries.forEach(function(entry) {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                },
+                { threshold: 0.1, rootMargin: '0px 0px -60px 0px' }
+            );
+
+            document.querySelectorAll('.reveal').forEach(function(el) {
+                observer.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>
