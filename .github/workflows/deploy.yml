@@ -1,0 +1,48 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy to VPS
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Execute deployment commands via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          script_stop: true
+          script: |
+            cd /var/www/BookMarket
+            echo "🚀 Fetching latest changes from Git..."
+            git reset --hard
+            git pull origin main
+
+            echo "📦 Installing Composer dependencies..."
+            composer install --no-dev --optimize-autoloader
+
+            echo "🗄️ Running migrations..."
+            php artisan migrate --force
+
+            echo "🎨 Building frontend assets..."
+            npm install
+            npm run build
+
+            echo "⚡ Optimizing Laravel cache..."
+            php artisan optimize:clear
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+
+            echo "🔒 Updating permissions..."
+            chown -R www-data:www-data /var/www/BookMarket/storage /var/www/BookMarket/bootstrap/cache /var/www/BookMarket/database
+            chmod -R 775 /var/www/BookMarket/storage /var/www/BookMarket/bootstrap/cache /var/www/BookMarket/database
+
+            echo "✅ Deployment finished successfully!"
