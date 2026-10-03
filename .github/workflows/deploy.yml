@@ -36,6 +36,7 @@ jobs:
             npm run build
 
             echo "⚡ Optimizing Laravel cache..."
+            sed -i 's/APP_NAME=.*/APP_NAME=Knygogo/' .env
             php artisan optimize:clear
             php artisan config:cache
             php artisan route:cache
