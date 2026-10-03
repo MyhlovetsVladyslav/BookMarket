@@ -31,12 +31,12 @@ function toggleTheme() {
       <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16 lg:h-[72px]">
           <Link href="/" class="flex items-center gap-2.5 group">
-            <div class="w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 shadow-md group-hover:scale-105 group-hover:shadow-orange-500/25 bg-gradient-to-tr from-amber-600 via-orange-500 to-amber-400">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white drop-shadow-sm transition-transform group-hover:rotate-[-6deg]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 group-hover:rotate-[-4deg]" style="background: var(--kg-accent);">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
               </svg>
             </div>
-            <span class="text-xl font-heading font-bold tracking-tight" style="color: var(--kg-text);">Knygo<span class="text-orange-500 font-extrabold">Go</span></span>
+            <span class="text-xl font-heading tracking-tight" style="color: var(--kg-text);">knygogo<span style="color: var(--kg-accent);">.</span></span>
           </Link>
 
           <!-- Desktop Nav Links -->
@@ -192,12 +192,12 @@ function toggleTheme() {
         <div class="grid sm:grid-cols-3 gap-8 mb-8">
           <div>
             <div class="flex items-center gap-2 mb-3">
-              <div class="w-8 h-8 rounded-xl flex items-center justify-center bg-gradient-to-tr from-amber-600 via-orange-500 to-amber-400 text-white shadow-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: var(--kg-accent);">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
               </div>
-              <span class="text-lg font-heading font-bold" style="color: var(--kg-text);">Knygo<span class="text-orange-500 font-extrabold">Go</span></span>
+              <span class="text-lg font-heading" style="color: var(--kg-text);">knygogo<span style="color: var(--kg-accent);">.</span></span>
             </div>
             <p class="text-sm leading-relaxed" style="color: var(--kg-text-muted);">Книжкова барахолка для справжніх книголюбів. Купуй, продавай та обмінюйся книгами.</p>
           </div>

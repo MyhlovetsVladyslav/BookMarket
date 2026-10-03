@@ -57,8 +57,8 @@ onMounted(() => {
 
 <template>
   <MainLayout>
-    <Head title="Книжкова барахолка">
-      <meta name="description" content="Knygogo — книжкова барахолка. Купуй та продавай книги швидко та зручно." />
+    <Head title="Головна — knygogo">
+      <meta name="description" content="knygogo — книжкова барахолка. Купуй та продавай книги швидко та зручно." />
     </Head>
 
     <!-- ===== HERO SECTION ===== -->
